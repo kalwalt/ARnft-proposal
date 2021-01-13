@@ -1,5 +1,7 @@
 import { INFTEntity } from "./core/NFTEntity";
-import { ICameraViewRenderer } from "./core/renderers/CamerViewRenderer";
+import { CameraViewRenderer } from "./core/renderers/CamerViewRenderer";
+import { AppJson } from "./core/data/AppData";
+import appdata from "./core/data/appdata.json";
 
 export class ARnft {
 
@@ -7,7 +9,7 @@ export class ARnft {
 
     private _controllers: Map<string, INFTEntity> = new Map<string, INFTEntity>();
 
-    private videoRenderer: ICameraViewRenderer;
+    private _videoRenderer: CameraViewRenderer;
 
     private _cameraDataURL: string;
 
@@ -17,17 +19,28 @@ export class ARnft {
 
     private _lastTime: number = 0;
 
+    public appData: AppJson = appdata as AppJson;
+
     // events
     public static readonly EVENT_SET_CAMERA: string = "ARNFT_SET_CAMERA_EVENT";
     public static readonly EVENT_FOUND_MARKER: string = "ARNFT_FOUND_MARKER_EVENT";
     public static readonly EVENT_LOST_MARKER: string = "ARNFT_LOST_MARKER_EVENT";
 
-    constructor(video: ICameraViewRenderer, camData: string, worker: string) {
-        this.videoRenderer = video;
+    constructor(camData: string, worker: string) {
+        //this.videoRenderer = video;
+        this._videoRenderer = null;
         this._cameraDataURL = camData;
         this._workerURL = worker;
         // set default fps at 15
         this.setFPS(this._fps);
+    }
+
+    private async startRenderer() {
+      this._videoRenderer = new CameraViewRenderer(document.getElementById("video") as HTMLVideoElement);
+      await this._videoRenderer.initialize(this.appData.videoSettings).catch((error) => {
+          console.log(error);
+          return Promise.reject(false);
+      });
     }
 
     public addNFTEntity(entity: INFTEntity, name?: string): INFTEntity {
@@ -46,8 +59,8 @@ export class ARnft {
         return this._controllers.get(name);
     }
 
-    public getCameraView(): ICameraViewRenderer {
-        return this.videoRenderer;
+    public getCameraView(): CameraViewRenderer {
+        return this._videoRenderer;
     }
 
     public setFPS(value: number): void {
@@ -55,6 +68,9 @@ export class ARnft {
     }
 
     public initialize(): Promise<boolean> {
+        console.log("init ARnft");
+        // views
+        this.startRenderer();
 
         let promises: Promise<boolean>[] = [];
         this._controllers.forEach(element => {
@@ -70,7 +86,7 @@ export class ARnft {
         let time: number = Date.now();
         let imageData: ImageData;
         if ((time - this._lastTime) > this._fps) {
-            imageData = this.videoRenderer.getImage();
+            imageData = this._videoRenderer.getImage();
             this._lastTime = time;
         }
 
@@ -86,6 +102,6 @@ export class ARnft {
             entity.destroy();
         });
         this._controllers.clear();
-        this.videoRenderer = null;
+        this._videoRenderer = null;
     }
 }
