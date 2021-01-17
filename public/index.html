@@ -16,7 +16,7 @@
   <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
   <script type="module" src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
 
-  <script type="module" src="./bundle.js"></script>
+  <script type="module" src="./arnft.core.js"></script>
   <!-- user should load CDN    arnft.core.js -->
   <!-- user can select 3d renderer and load CDN    arnft.babylonjs.js or arnft.threejs.js-->
 
@@ -28,13 +28,13 @@
       //  namespace of ARNFT
       //  pick your renderer.  I want to suggest that ARNft supports BabylonJS first.   Several reasons but ill start with its a better Game Engine/Framework. AR needs game features.
       //  Though THREEJS is a good framework!
-      const renderer = new ARNFT.Scene3DRendererBJS(document.getElementById("canvas")); //  or Scene3DRendererTHREE.js
-      await renderer.initialize();
+      //const renderer = new ARNFT.Scene3DRendererBJS(document.getElementById("canvas")); //  or Scene3DRendererTHREE.js
+      //await renderer.initialize();
       // add lights and camera here!
 
       // init the cameraview
-      let cameraView = new ARNFT.CameraViewRenderer(document.getElementById("video"));
-      await cameraView.initialize();
+      //let cameraView = new ARNFT.CameraViewRenderer(document.getElementById("video"));
+      //await cameraView.initialize();
 
 
       // I found strings in ARNFT.  a good practice is not writing strings in the framework.   Dont give reasons for devs to change ARNFt code.  give them options.
@@ -42,12 +42,12 @@
       let workerURL = './resources/jsartoolkit5/artoolkit/artoolkit.wasm_worker.js';
       let cameraDataURL = '../../data/camera_para.dat';
 
-      const arnft = new ARNFT.ARnft(cameraView, cameraDataURL);
+      const arnft = new ARNFT.ARnft(cameraDataURL, workerURL);
       // arfnt can be throttle.  not sure if this is a good idea
       arnft.setFPS(15);
 
       // JSON data example - for brevity ill just make an object
-      let duckData = {
+      /*let duckData = {
         "marker": "./data/duck",
         "model": "./data/duck.glb"
       }
@@ -76,7 +76,7 @@
       }
       let image = await ARNFT.BasicImageLoaderBJS.load(imageData.image, renderer.getScene());
       let imageMarker = new ARNFT.NFTImageBJS(image);
-      arnft.addNFTEnity(imageMarker, imageData.marker);
+      arnft.addNFTEnity(imageMarker, imageData.marker);*/
 
       // init arnft .  arnft now can track multple markers and present multiple media types.   initilize them all here
       await arnft.initialize();
@@ -86,7 +86,7 @@
       //  update loop taken out of ARnft for ease of dev use.   i.e.  What if i wanted to pause the experince?
       var tick = () => {
         arnft.update();
-        renderer.update();
+        //renderer.update();
         setTimeout(tick, 1000 / 60);
       };
       tick();
