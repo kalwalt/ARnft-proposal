@@ -42,7 +42,7 @@
       let workerURL = './resources/jsartoolkit5/artoolkit/artoolkit.wasm_worker.js';
       let cameraDataURL = '../../data/camera_para.dat';
 
-      const arnft = new ARNFT.ARnft(cameraDataURL);
+      const arnft = new ARNFT.ARnft(cameraDataURL, workerURL);
       // arfnt can be throttle.  not sure if this is a good idea
       arnft.setFPS(15);
 
@@ -86,7 +86,7 @@
       //  update loop taken out of ARnft for ease of dev use.   i.e.  What if i wanted to pause the experince?
       var tick = () => {
         arnft.update();
-        renderer.update();
+        //renderer.update();
         setTimeout(tick, 1000 / 60);
       };
       tick();
